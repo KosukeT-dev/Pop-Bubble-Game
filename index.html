@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pop Bubble Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            max-height: 500px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .bubble:hover {
+            transform: scale(1.1);
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+        }
+        #start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="score">Score: 0</div>
+        <button id="start-button">Start</button>
+        <div id="instructions">
+            How to play:<br>
+            Click or tap the bubbles to pop them and relieve stress!
+        </div>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const scoreElement = document.getElementById('score');
+        const startButton = document.getElementById('start-button');
+        const instructionsElement = document.getElementById('instructions');
+        let score = 0;
+        let isPlaying = false;
+
+        startButton.addEventListener('click', startGame);
+
+        function startGame() {
+            score = 0;
+            isPlaying = true;
+            updateScore();
+            startButton.style.display = 'none';
+            instructionsElement.style.display = 'none';
+            createBubble();
+        }
+
+        function createBubble() {
+            if (!isPlaying) return;
+
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            
+            const size = Math.random() * 50 + 20;
+            const containerRect = gameContainer.getBoundingClientRect();
+            const maxX = containerRect.width - size;
+            const maxY = containerRect.height - size;
+
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * maxX}px`;
+            bubble.style.top = `${Math.random() * maxY}px`;
+            bubble.style.backgroundColor = getRandomColor();
+
+            bubble.addEventListener('click', () => {
+                score++;
+                updateScore();
+                gameContainer.removeChild(bubble);
+            });
+
+            gameContainer.appendChild(bubble);
+
+            const duration = Math.random() * 2000 + 1000;
+            setTimeout(() => {
+                if (gameContainer.contains(bubble)) {
+                    gameContainer.removeChild(bubble);
+                }
+                createBubble();
+            }, duration);
+        }
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        function updateScore() {
+            scoreElement.textContent = `Score: ${score}`;
+        }
+    </script>
+</body>
+</html>
